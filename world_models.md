@@ -5,6 +5,8 @@
 
 A lecture tracing the full historical arc — from Ha & Schmidhuber (2018) to the JEPA frontier (2025–2026).
 
+.footnote[.red.bold[*] Created with Claude]
+
 ---
 
 # Part 1 — Motivation & Definition
@@ -15,7 +17,7 @@ A lecture tracing the full historical arc — from Ha & Schmidhuber (2018) to th
 
 DeepMind's **Genie 3** generates interactive, navigable 3D environments at **24 fps** from a single text prompt — with consistency for several minutes.
 
-![Genie 3 demo still](https://lh3.googleusercontent.com/oxNAUbm8DBjXuk1EdC4_42YRAdiHs7BQk-CO6byhGlLM_x0VEbPVN2vQ4eTWsvLxtkBEzOwa9CY9fWl4xmAUhwuFqWj9V8DIvqrM=w1072-rw)
+![Genie 3 demo still](https://lh3.googleusercontent.com/BirHhzrtzHQtXvNG0dXcj9QFA7vGUNWQYbeQiMiY7RL8a7-xGrLDGybf9YZZ1nML7lRVZh4KYARz0PFO8xBAfe7FAatH6xVlRnakHtnESHlpzEBTEA=w2880-h1620-n-nu-rw-lo)
 
 What does the network need to "know" to do this?
 *Source: DeepMind, Genie 3 (Aug 2025).*
