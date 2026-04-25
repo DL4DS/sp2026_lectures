@@ -2,31 +2,31 @@
 
 ### DS542 — Deep Learning for Data Science
 
-**75-minute lecture**
-
 Based on two essays by Sebastian Raschka:
-- *Understanding Reasoning LLMs* (Feb 2025)
-- *Components of a Coding Agent* (Apr 2026)
+- [*Understanding Reasoning LLMs* (Feb 2025)](https://magazine.sebastianraschka.com/p/understanding-reasoning-llms)
+- [*Components of a Coding Agent* (Apr 2026)](https://magazine.sebastianraschka.com/p/components-of-a-coding-agent)
+
+.footnote[.red.bold[*] Created with Claude]
 
 ---
 
 ## Today's Roadmap
 
-**Part 1 — Reasoning LLMs (≈40 min)**
+**Part 1 — Reasoning LLMs**
 
-1. What is a "reasoning model"?
-2. When should we (and shouldn't we) use one?
-3. The DeepSeek-R1 family as a case study
-4. Four ways to build/improve reasoning models
-5. Doing it on a budget: Sky-T1, TinyZero, Journey Learning
+ 1. What is a "reasoning model"?
+ 2. When should we (and shouldn't we) use one?
+ 3. The DeepSeek-R1 family as a case study
+ 4. Four ways to build/improve reasoning models
+ 5. Doing it on a budget: Sky-T1, TinyZero, Journey Learning
 
-**Part 2 — Coding Agents (≈30 min)**
+**Part 2 — Coding Agents**
 
 6. LLM vs. reasoning model vs. agent
 7. Six components of a coding harness
 8. Why a good harness can matter more than the model
 
-**Wrap-up (≈5 min)** — takeaways, discussion
+**Wrap-up** — takeaways, discussion
 
 ---
 
@@ -36,16 +36,14 @@ Based on two essays by Sebastian Raschka:
 
 ## Stage 4 of the LLM Lifecycle
 
-The now-familiar pipeline for building LLMs:
+![LLM development stages 1-3 plus specialization](https://substackcdn.com/image/fetch/$s_!QwUc!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fd6ebc5c9-461f-4d3a-889b-b8ea4e14e5ba_1600x830.png)
 
 1. **Pre-training** — next-token prediction on web-scale text
 2. **Supervised fine-tuning (SFT)** — instruction following
 3. **Preference tuning** — RLHF / DPO / etc.
 4. **Specialization** — RAG, code assistants, **reasoning models**, …
 
-Reasoning models are one of the most important specializations to emerge in 2024–2025.
-
-> Specialization *adds* capability for particular tasks — it does not replace general-purpose LLMs.
+Reasoning models are one of the most important specializations to emerge in 2024–2025. Specialization *adds* capability — it does not replace general-purpose LLMs.
 
 ---
 
@@ -61,20 +59,22 @@ No universally agreed-upon definition, but a working one:
 | "A train at 60 mph travels 3 hours. How far?" | Yes — relate distance, speed, time |
 | "Prove that √2 is irrational." | Yes — multi-step proof |
 
+--
+
+Also called _"thinking fast"_ and _"thinking slow"_.
+
 ---
 
 ## Where Does "Reasoning" Show Up?
 
+<img src="https://substackcdn.com/image/fetch/$s_!8oZo!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ff2987079-25f4-45fb-a020-1ac936ed16cb_1424x820.png" alt="Regular LLM vs reasoning model output" style="max-width: 60%; display: block; margin: 0.4em auto;" />
+
 Intermediate steps can appear in two places:
 
 1. **In the visible response** — the model writes out its work
+2. **In hidden iterations** — e.g. OpenAI's `o1` runs multiple internal passes; only the final answer is shown to the user
 
-   **Regular LLM:** *"The train travels 180 miles."*
-   **Reasoning LLM:** *"Distance = speed × time. 60 × 3 = 180 miles."*
-
-2. **In hidden iterations** — e.g. OpenAI's `o1` runs multiple internal passes; the user only sees the final answer
-
-Most modern reasoning models do **both**. Non-reasoning LLMs can *also* produce intermediate steps when prompted ("think step by step") — the difference is *default behavior* and *training*.
+Most modern reasoning models do **both**. Non-reasoning LLMs can *also* produce intermediate steps when prompted — the difference is *default behavior* and *training*.
 
 ---
 
@@ -100,6 +100,8 @@ Reasoning models are **more expensive**, **more verbose**, and can **overthink**
 
 ## Strengths & Weaknesses
 
+![Strengths and weaknesses of reasoning models](https://substackcdn.com/image/fetch/$s_!lnf2!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F46dbe029-ab7d-4278-8dfe-7bc4af79a103_1352x524.png)
+
 | **Strengths** | **Weaknesses** |
 |---|---|
 | Excellent on complex, multi-step problems | Higher per-token cost |
@@ -107,7 +109,7 @@ Reasoning models are **more expensive**, **more verbose**, and can **overthink**
 | Better math & coding benchmarks | Can "overthink" easy prompts |
 | Produces inspectable reasoning traces | Inference costs scale with thought length |
 
-This trade-off is why you'll see providers offer *both* a regular and a "thinking" variant.
+This trade-off is why providers offer *both* a regular and a "thinking" variant.
 
 ---
 
@@ -121,28 +123,16 @@ DeepSeek released **three distinct models**, each teaching a different lesson:
 | **DeepSeek-R1** | **SFT + RL** produces the strongest model |
 | **DeepSeek-R1-Distill** | Smaller models catch up via **SFT distillation** |
 
-All three are built on top of the DeepSeek-V3 671B base model. The technical report is freely available and serves as a blueprint for the field.
+All three are built on top of the [DeepSeek-V3 671B](https://arxiv.org/abs/2412.19437) base model. The
+[technical report](https://github.com/deepseek-ai/DeepSeek-R1/blob/main/DeepSeek_R1.pdf) (or [arXiv](https://arxiv.org/abs/2501.12948)) is freely available and serves as a blueprint for the field.
 
 ---
 
 ## The DeepSeek Training Pipeline (Bird's-Eye View)
 
-```
- DeepSeek-V3 base (671B, pre-trained)
-          │
-          ├─► Pure RL ──────────────► R1-Zero
-          │
-          │   (R1-Zero generates "cold-start" SFT data)
-          │        │
-          ▼        ▼
-      SFT → RL → SFT → RL ──────────► R1 (flagship)
-                         │
-                         │ (R1 generates 800K SFT examples)
-                         ▼
-                      SFT on Qwen / Llama ──► R1-Distill (1.5B–70B)
-```
+![DeepSeek R1 training pipeline for all three models](https://substackcdn.com/image/fetch/$s_!z-dr!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fdb19df56-c5bf-4a0c-aafb-4629a39b13f5_1542x1166.png)
 
-Three very different recipes, one shared starting point.
+All three models start from the same DeepSeek-V3 671B base. The recipes diverge — and each teaches a different lesson. We'll walk through each branch in turn.
 
 ---
 
@@ -166,24 +156,25 @@ Three common flavors:
 - **Majority voting / self-consistency** — sample N answers, pick most common
 - **Search-based decoding** — beam search, MCTS, process reward models
 
-**The canonical CoT example:**
+![Zero-shot chain-of-thought prompting example](https://substackcdn.com/image/fetch/$s_!VFAa!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F523eee5e-afb6-4019-a11b-e0a291d2c286_1600x419.png)
 
-> *"Roger has 5 tennis balls. He buys 2 cans, each with 3 balls. How many does he have?"*
+Adding *"Let's think step by step"* shifts the model into a different response distribution — often turning wrong answers into right ones. (Kojima et al., 2022)
 
-Adding *"Let's think step by step"* shifts the model into a different response distribution: *"5 + 2×3 = **11**"* — often turning wrong answers into right ones. (Kojima et al., 2022)
+???
+MCTS: Monte Carlo Tree Search
 
 ---
 
 ## Search-Based Inference Scaling
 
-A **process reward model (PRM)** scores partial reasoning chains. We then use search to find high-scoring full chains.
+![Different search-based methods with process reward model](https://substackcdn.com/image/fetch/$s_!YGJO!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F5cb10e5a-738b-4c9e-ba65-5850d4793706_1600x919.png)
 
-Common variants:
+A **process reward model (PRM)** scores partial reasoning chains. Common variants:
 - **Best-of-N** — sample N answers, pick the highest-scored
 - **Beam search with PRM** — keep top-k partial chains at each step
 - **MCTS** — explore branching trees of reasoning
 
-See Snell et al., *Scaling LLM Test-Time Compute Optimally* (2024) — test-time compute can sometimes beat scaling parameters.
+See [Snell et al., *Scaling LLM Test-Time Compute Optimally* (2024)](https://arxiv.org/abs/2408.03314).
 
 ---
 
@@ -202,16 +193,13 @@ Their finding:
 
 ## Approach 2 — Pure Reinforcement Learning
 
+<img src="https://substackcdn.com/image/fetch/$s_!_9Z-!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fa5bb6ecc-7e46-45fe-abff-1eb02e6b0e3a_1556x1162.png" alt="DeepSeek-R1-Zero development process" width="400" />
+
 The headline finding of DeepSeek-R1:
 
 > **Reasoning can emerge as a learned behavior from RL alone, with no SFT warm-start.**
 
-Recipe for **R1-Zero**:
-- Start from DeepSeek-V3 base (pre-trained only)
-- Skip SFT entirely
-- Apply RL with *rule-based* rewards
-
-This is unusual — standard RLHF has an SFT stage first.
+Recipe for **R1-Zero**: start from DeepSeek-V3 base, skip SFT entirely, apply RL with *rule-based* rewards. This is unusual — standard RLHF has an SFT stage first.
 
 ---
 
@@ -233,23 +221,19 @@ Two rule-based rewards — no human preference model needed:
 
 ## The "Aha!" Moment
 
-During R1-Zero training, the researchers observed an emergent behavior:
+![The emergent "Aha!" moment during R1-Zero training](https://substackcdn.com/image/fetch/$s_!Prn2!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F30f8e37b-ba60-49d2-a95e-9c06b2033ee4_1600x1019.png)
 
-> The model spontaneously began to **pause, reconsider, and rewrite** its approach mid-answer — producing "aha" moments like:
->
-> *"Wait — let me re-examine this step. If I assume … then actually we can …"*
+During R1-Zero training, the model spontaneously began to **pause, reconsider, and rewrite** its approach mid-answer. Nobody trained it to do that — the behavior emerged from reward alone.
 
-Nobody trained it to do that. The behavior emerged from reward alone.
-
-R1-Zero is not the strongest reasoning model — but it is the **proof of concept** that reasoning can be *grown*, not just *taught*.
+R1-Zero isn't the strongest reasoning model — but it is the **proof of concept** that reasoning can be *grown*, not just *taught*.
 
 ---
 
 ## Approach 3 — SFT + RL (the Flagship Recipe)
 
-This is how you get **DeepSeek-R1** — and probably `o1` and friends.
+<img src="https://substackcdn.com/image/fetch/$s_!19pK!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fdf7f99f0-d154-49e5-b60a-4d148e0a61be_1548x1154.png" alt="DeepSeek-R1 development process" width="400" />
 
-Four stages:
+This is how you get **DeepSeek-R1** — and probably `o1` and friends. Four stages:
 
 1. Use R1-Zero to generate "cold-start" SFT data → instruction-tune V3
 2. RL stage (accuracy + format + **language-consistency** reward)
@@ -274,56 +258,50 @@ Minor-looking detail, major UX improvement.
 
 ## R1 vs. R1-Zero: Does the Extra Work Pay Off?
 
-Roughly (benchmarks from the technical report):
+![Benchmark comparison of OpenAI o1 and DeepSeek R1](https://substackcdn.com/image/fetch/$s_!22Cm!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ff7f73f16-db4e-4047-89b0-823f16cefb33_1556x490.png)
 
-| Benchmark | R1-Zero | R1 |
-|---|---|---|
-| AIME 2024 (pass@1) | ~71% | ~80% |
-| MATH-500 | ~95% | ~97% |
-| LiveCodeBench | ~50% | ~65% |
+SFT + RL consistently beats pure RL on challenging benchmarks. The RL-only model (R1-Zero) is scientifically more interesting; the SFT+RL model (R1) is practically more useful.
 
-SFT + RL consistently beats pure RL. The RL-only model is scientifically more interesting; the SFT+RL model is practically more useful.
+R1 is also broadly competitive with `o1` — and substantially cheaper at inference time.
 
 ---
 
 ## Approach 4 — Pure SFT (Distillation)
 
+<img src="https://substackcdn.com/image/fetch/$s_!xUjE!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F7db7c46b-fe67-49f4-9f65-b0e7b7e5ac08_1444x1174.png" alt="DeepSeek-R1-Distill development process" width="300" />
+
 DeepSeek also shipped **R1-Distill** models: Qwen and Llama bases, sizes 1.5B–70B, fine-tuned on outputs from R1.
 
 > ⚠️ This is **not classical knowledge distillation** (no logit matching). It's instruction fine-tuning on R1-generated answers.
 
-Two reasons to do it:
-
-- **Efficiency** — 7B/14B models run on a laptop, 70B on a single H100
-- **Research signal** — how far does pure SFT get you?
+Two reasons: **efficiency** (7B/14B run on a laptop) and **research signal** (how far does pure SFT get you?).
 
 ---
 
 ## Distillation Results (R1-Distill)
 
-The distilled models are surprisingly strong:
+![Benchmark comparison of distilled versus non-distilled models](https://substackcdn.com/image/fetch/$s_!XwZe!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Febc749fb-6a79-483f-bcda-b219f284bc09_1168x604.png)
 
+The distilled models are surprisingly strong:
 - **R1-Distill-Qwen-32B** ≈ matches `o1-mini` on many reasoning benchmarks
 - **R1-Distill-Llama-70B** approaches full R1 on some tasks
 - Far cheaper to serve than the 671B R1
 
-Plausible interpretation: `o1-mini` may itself be a distilled version of `o1`.
-
-The tradeoff: distillation needs a *stronger teacher model already to exist*.
+Plausible interpretation: `o1-mini` may itself be a distilled version of `o1`. Tradeoff: distillation needs a *stronger teacher model to already exist*.
 
 ---
 
 ## A Revealing Experiment: Pure RL on a Small Model
 
-DeepSeek also tried applying R1-Zero's pure-RL recipe to **Qwen-32B** directly.
+![Benchmark comparison of distillation vs RL on a smaller 32B model](https://substackcdn.com/image/fetch/$s_!5_5L!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F05514c9f-eb04-496b-bd98-bb4710c65b14_1448x408.png)
 
-Result: worse than R1-Distill-Qwen-32B.
+DeepSeek also tried applying R1-Zero's pure-RL recipe to **Qwen-32B** directly. Result: worse than R1-Distill-Qwen-32B.
 
 Interpretation:
 - **Pure RL** is effective when the base model is already large/strong enough
 - **Pure SFT on high-quality reasoning data** is more effective at smaller scales
 
-If you only have a small base model, distill. If you have a strong base model, RL.
+Small base model → distill. Strong base model → RL.
 
 ---
 
@@ -348,15 +326,15 @@ You do not need millions of dollars to play with these ideas.
 
 ## Sky-T1 — $450 to Train an o1-Preview-Level Model
 
-From NovaSky (UC Berkeley), Jan 2025:
+![Sky-T1 training cost and performance](https://substackcdn.com/image/fetch/$s_!Y8HI!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F8865a313-2326-4f07-a6dc-72cc94cb2ebe_1364x570.png)
 
+From NovaSky (UC Berkeley), Jan 2025:
 - **Base model:** Qwen2.5-32B
+- **Data curation via rejection sampling:** generate many candidate traces from a strong teacher, keep only the ones whose final answer verifies (math / code tests), SFT on the survivors.
 - **Technique:** SFT only, no RL
 - **SFT dataset:** just **17K examples** (generated from a stronger model)
-- **Total training cost:** **~$450**
+- **Total training cost:** **~$450** — less than an AI conference registration
 - **Result:** matches `o1-preview` on several reasoning benchmarks
-
-This costs less than registering for a single AI conference.
 
 Moral: high-quality, well-curated data > lots of data.
 
@@ -364,33 +342,29 @@ Moral: high-quality, well-curated data > lots of data.
 
 ## TinyZero — Pure RL for $30
 
-From Berkeley, Jan 2025:
+<img src="https://substackcdn.com/image/fetch/$s_!Ykdn!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F6111f4b4-cfb9-494c-8390-ec251702914b_1600x955.png" alt="TinyZero self-verification capability" style="width: 50%; margin: 0.4em auto;" />
 
+From Berkeley, Jan 2025:
 - **Base model:** Qwen2.5-3B
 - **Technique:** pure RL (R1-Zero-style) on the *Countdown* number puzzle
 - **Total training cost:** **<$30**
 - **Observation:** even this small model developed **self-verification** behavior
 
-Shows the R1-Zero finding replicates at very small scale, on a narrow domain.
-
-Not a general reasoner — but a powerful proof of concept for the classroom.
+Shows the R1-Zero finding replicates at very small scale, on a narrow domain. Not a general reasoner — but a powerful proof of concept.
 
 ---
 
 ## Journey Learning — A Twist on SFT
 
-From *O1 Replication Journey: A Strategic Progress Report — Part 1* (Oct 2024).
+![Journey learning vs. shortcut learning](https://substackcdn.com/image/fetch/$s_!TxCO!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F7a0bfcd0-6d93-4c91-a0d6-28178839b7cf_1492x724.png)
 
-**Shortcut learning (standard SFT):**
-- Train only on *correct* solution paths
-- Model learns "what a good answer looks like"
+From [*O1 Replication Journey — Part 1* (Oct 2024)](https://arxiv.org/abs/2410.18982):
 
-**Journey learning:**
-- Train on *both correct and incorrect* paths
-- Include reflection: "I tried X, that didn't work because Y, so I tried Z"
-- Model learns *how to recover from mistakes*
+**Shortcut learning (standard SFT):** train only on *correct* paths — model learns "what a good answer looks like."
 
-This resembles the self-correction that emerges in RL — but achievable with pure SFT.
+**Journey learning:** train on *both correct and incorrect* paths with reflection — "I tried X, that didn't work because Y, so I tried Z."
+
+Resembles the self-correction that emerges in RL — but achievable with pure SFT.
 
 ---
 
@@ -426,21 +400,19 @@ Now: what happens when we put one of these models inside an **agent**?
 
 ## Why Talk About Agents?
 
-In 2024–2025, a lot of practical LLM progress was **not** about better models.
+<img src="https://substackcdn.com/image/fetch/$s_!zcE_!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fc90147bc-4574-4b52-914f-8bda96620063_3467x2270.png" alt="Claude Code CLI, Codex CLI, and Mini Coding Agent side by side" style="max-width: 480px; display: block; margin: 1em auto;" />
 
-It was about **better scaffolding around the models**:
-- tool use
-- context management
-- memory
-- control loops
+In 2024–2025, a lot of practical LLM progress was **not** about better models. It was about **better scaffolding around the models**: tool use, context management, memory, control loops.
 
 This is why **Claude Code** or **Codex CLI** can feel dramatically more capable than the *same model* in a plain chat interface.
 
-The model is the engine. The harness is the car.
+> The model is the engine. The harness is the car.
 
 ---
 
 ## LLM vs. Reasoning Model vs. Agent
+
+![Relationship between LLM, reasoning LLM, and agent harness](https://substackcdn.com/image/fetch/$s_!if1o!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F09a4d839-d572-4eab-a2ee-47f644a746e5_3501x885.png)
 
 | Concept | What it is |
 |---|---|
@@ -462,7 +434,7 @@ An agent repeatedly runs a loop inside an environment:
         ┌─── observe ──► gather info from environment
         │
         ▼
-     inspect ──► analyze the info
+      inspect ──► analyze the info
         │
         ▼
       choose ──► pick the next action
@@ -479,13 +451,13 @@ Stop when the goal is met (or budget/limit is reached).
 
 ## A Coding Harness Has Three Layers
 
+![Three layers of a coding harness: model, agent loop, runtime supports](https://substackcdn.com/image/fetch/$s_!l4hd!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F76f2c37e-1996-4f30-96cd-e2e555169873_2227x992.png)
+
 1. **Model family** — the LLM / reasoning model (the engine)
 2. **Agent loop** — observe → inspect → choose → act
 3. **Runtime supports** — repo context, tools, caching, memory, sandboxing
 
 > **Same model + better harness = dramatically different UX.**
-
-This is why GPT-5 inside Codex and GPT-5 inside a chat box feel like different products.
 
 ---
 
@@ -520,6 +492,8 @@ Next-token prediction alone doesn't solve these. A harness does.
 
 # The Six Components of a Coding Harness
 
+![Main harness features overview](https://substackcdn.com/image/fetch/$s_!iPcp!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F82c0f343-afec-4a9f-b8fe-b60f7ad5db5f_3396x971.png)
+
 1. **Live repo context**
 2. **Prompt shape and cache reuse**
 3. **Structured tools, validation, and permissions**
@@ -533,20 +507,20 @@ We'll walk through each.
 
 ## Component 1 — Live Repo Context
 
+<img src="https://substackcdn.com/image/fetch/$s_!mPz4!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F2e3a1e6a-4eb5-4b60-b52f-0a4ee880dbca_2085x1428.png" alt="Workspace summary combined with user request" width="300" />
+
 When the user says *"fix the tests"*, the model cannot answer in a vacuum. The harness must know:
 
-- Are we inside a Git repo? Which branch?
+- Git repo? Branch? Uncommitted changes?
 - Is there an `AGENTS.md` / `CLAUDE.md` / `README`?
-- Repo layout? Recent commits? Uncommitted changes?
-- What build/test commands are defined?
+- Repo layout? What build/test commands are defined?
 
-The harness gathers these **stable facts** upfront as a workspace summary — not on every prompt.
+--
 
-**Without it, the agent guesses:** *"I'll run `pytest`"* — wrong, this project uses `make test`.
-
+**Without it:** *"I'll run `pytest`"* — wrong, this project uses `make test`.
 **With it:** *"`AGENTS.md` says tests run via `make test`. Running now…"*
 
-This is why files like `AGENTS.md`, `CLAUDE.md`, and `CURSOR.md` have become a de facto ecosystem convention.
+This is why files like `AGENTS.md` and `CLAUDE.md` have become a de facto ecosystem convention.
 
 ---
 
@@ -567,23 +541,45 @@ Problem: **most of that prompt doesn't change between turns.**
 
 ## Split Into "Stable Prefix" + "Dynamic Tail"
 
-```
-┌─────────────────────────────────────┐
-│    Stable prompt prefix (cached)    │
-│  • system / agent instructions      │
-│  • tool descriptions                │
-│  • workspace summary                │
-├─────────────────────────────────────┤
-│         Dynamic section             │
-│  • short-term / working memory      │
-│  • recent transcript (compacted)    │
-│  • new user request                 │
-└─────────────────────────────────────┘
-```
+![Stable prompt prefix and changing session state](https://substackcdn.com/image/fetch/$s_!keF3!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F92d9467c-1333-40f3-8d5d-c8bc0ffebb11_2698x1001.png)
 
-Smart runtimes **cache the KV for the prefix** → massive latency and cost wins on long coding sessions.
+The **stable prefix** contains system instructions, tool descriptions, and workspace summary — all mostly unchanging across turns.
 
-Anthropic and OpenAI both expose prompt caching APIs for exactly this reason.
+The **dynamic section** contains short-term memory, recent transcript, and the new user request.
+
+Smart runtimes **cache the Key-Value weights for the prefix** → massive latency and cost wins on long coding sessions. Anthropic and OpenAI both expose prompt caching APIs for exactly this reason.
+
+---
+
+## What is Prompt Caching?
+
+**Problem:** every API call re-processes the full prompt through all attention layers — expensive for long system prompts, tool schemas, and growing agent transcripts.
+
+--
+
+**Idea:** the provider caches the **KV (key/value) tensors** computed for a prompt *prefix* on their servers. Identical prefixes on later calls skip the prefill and load cached state.
+
+--
+- **Prefix-only, exact-token match** — one character change invalidates the rest
+- **TTL-based eviction** (Anthropic: 5 min or 1 hr; OpenAI: ~5–10 min idle)
+- **Pricing:** writes cost *more* (~1.25–2x), reads cost *much less* (~0.1–0.5x)
+
+---
+
+## Prompt Caching in Practice
+
+**Providers:**
+- **Anthropic** — explicit `cache_control` breakpoints (up to 4)
+- **OpenAI** — automatic for prompts ≥1024 tokens
+- **Google Gemini** — explicit `CachedContent` handle
+
+**Why it's critical for coding agents:**
+- Agents replay a *growing* transcript on every tool-call iteration
+- Large, stable system prompts + tool schemas + file context
+- Without caching: a 20-step agent task reprocesses the full prompt 20×
+- With caching: each turn only prefills the new tool result → **5–10× lower latency, ~10× lower cost**
+
+**Design rule:** put **stable content first** (system prompt → tools → docs → history → new user turn). Never interpolate timestamps or request IDs near the top.
 
 ---
 
@@ -606,40 +602,28 @@ A coding agent *actually runs them* — and uses the output. But not via free-fo
 
 ## The Tool-Use Flow
 
-```
-  model emits structured action
-           │
-           ▼
-  harness validates:
-    • Is this a known tool?
-    • Are arguments well-formed?
-    • Is the path inside the workspace?
-    • Does this need user approval?
-           │
-           ▼
-  (if needed) prompt user for approval
-           │
-           ▼
-  execute, capture output
-           │
-           ▼
-  feed clipped result back into loop
-```
+![Tool-use flow: model emits action, harness validates, executes, feeds back](https://substackcdn.com/image/fetch/$s_!yL-u!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F7aff251f-0ce2-44f1-9792-5449c24d5600_2172x927.png)
+
+1. Model emits a **structured action**
+2. Harness **validates**: known tool? valid args? path inside workspace? needs approval?
+3. (If needed) prompt user for **approval**
+4. **Execute**, capture output
+5. Feed **clipped result** back into the loop
 
 ---
 
 ## Why Validation & Permissions Matter
 
+<img src="https://substackcdn.com/image/fetch/$s_!nD22!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F6ff4770e-c3a5-442f-a657-ef9bec6b9862_2493x2031.png" alt="Tool call approval request in the Mini Coding Agent" style="max-width: 35%; height: auto; display: block; margin: 0.8em auto;">
+
 The harness restricts the model's freedom — on purpose.
 
-- **Rejects malformed actions** — "that's not a valid tool call"
-- **Enforces path sandboxing** — can only touch files inside the repo
+- **Rejects malformed actions**
+- **Enforces path sandboxing** — only files inside the repo
 - **Approval gates dangerous actions** — rm, force push, network calls
 - **Limits blast radius** — no `sudo`, no writes outside workspace
 
 Counter-intuitively, **giving the model less freedom makes it more useful and more trustworthy**.
-
-Real-world analogy: a professional chef working in a commercial kitchen has *more* rules than a home cook — and produces better food, more reliably.
 
 ---
 
@@ -658,13 +642,11 @@ Left unchecked, the context fills up in a few turns. Even with million-token con
 
 ## Two Compaction Strategies
 
-**Clipping**
-- Truncate long outputs (file reads, test logs, search results)
-- Show head/tail, elide middle
-- Prevents any one thing from dominating the budget
+![Context compaction: clipping and transcript reduction](https://substackcdn.com/image/fetch/$s_!ksfT!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F1d61d701-1f2b-4010-9a1f-2cefc7265bde_2495x1213.png)
 
-**Transcript reduction / summarization**
-- Turn full session history into a smaller summary
+**Clipping** — truncate long outputs (file reads, test logs, search results); show head/tail, elide middle. Prevents any one thing from dominating the budget.
+
+**Transcript reduction** — turn full session history into a smaller summary.
 - **Recency-weighted**: keep recent events richer, compress older ones more
 - **Deduplicate repeat file reads** — don't show the same file 5 times
 
@@ -684,16 +666,30 @@ Good context engineering is the "boring" infrastructure work that separates grea
 
 ## Component 5 — Structured Session Memory
 
+<img src="https://substackcdn.com/image/fetch/$s_!xWhc!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fe58efdfb-9c19-42e8-a016-90b41b51ef15_2438x1346.png" alt="Full transcript and working memory as two JSON files" style="max-width: 40%; height: auto;">
+
 Two layers of state, with different jobs:
 
 | Layer | Format | Role |
 |---|---|---|
 | **Full transcript** | JSONL, append-only | Durable record. Resumable if agent crashes. |
-| **Working memory** | JSON, structured | Distilled state: current task, key files, recent notes. Gets updated and compacted, not just appended. |
+| **Working memory** | JSON, structured | Distilled state: current task, key files, recent notes. Updated and compacted, not just appended. |
 
-Compact transcript (Component 4) ≠ working memory (this one):
+Compact transcript (Component 4) ≠ working memory:
 - **Compact transcript** → for prompt reconstruction
 - **Working memory** → for task continuity
+
+???
+JSONL: JSON Lines
+
+JSONL is a format where each line is a valid JSON object. It is similar to JSON, but each object is on a separate line. This is useful for storing large datasets or logs.
+
+Example:
+
+```jsonl
+{"name": "John", "age": 30}
+{"name": "Jane", "age": 25}
+```
 
 ---
 
@@ -730,6 +726,8 @@ Close your laptop, reopen tomorrow → the agent loads both. The transcript grou
 
 ## Component 6 — Delegation via Subagents
 
+![Subagent inherits context but runs inside tighter boundaries](https://substackcdn.com/image/fetch/$s_!Ygjt!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F81b2ae42-ea42-40bf-b2ba-fdfcf9b87912_2438x990.png)
+
 Sometimes the main agent needs a side answer:
 - "Which file defines `encode_batch`?"
 - "What does this config say?"
@@ -762,6 +760,8 @@ Return a focused answer to the parent, then disappear.
 ---
 
 ## The Six Components at a Glance
+
+![Six main features of a coding harness summary](https://substackcdn.com/image/fetch/$s_!ml47!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F4fe9e9f0-b04f-4c3e-be1f-fbd74b41c4aa_3396x971.png)
 
 | # | Component | Why it matters |
 |---|---|---|
