@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Title</title>
+    <title>World Models</title>
     <meta charset="utf-8">
     <style>
       @import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
@@ -55,19 +55,39 @@
     <script src="https://remarkjs.com/downloads/remark-latest.min.js">
     </script>
     <script>
-      var slideshow = remark.create({
-        sourceUrl: 'world_models.md',
-        navigation: {
-          // Enable or disable navigating using scroll
-          scroll: true,
-
-          // Enable or disable navigation using touch
-          touch: false,
-
-          // Enable or disable navigation using click
-          click: false
+      // Hide markdown's special characters inside math regions so remark's
+      // markdown parser doesn't turn `s_t` into `s<em>t</em>` etc.
+      // The browser decodes the entities back to plain text in the DOM,
+      // so MathJax still sees correct LaTeX.
+      function protectMath(src) {
+        function esc(m) {
+          return m
+            .replace(/_/g, '&#95;')
+            .replace(/\*/g, '&#42;')
+            .replace(/\\/g, '&#92;');
         }
-      });
+        // Display math: $$ ... $$  (multi-line allowed)
+        src = src.replace(/\$\$([\s\S]+?)\$\$/g, function (_m, body) {
+          return '$$' + esc(body) + '$$';
+        });
+        // Inline math: $ ... $  (single line, not $$)
+        src = src.replace(/(^|[^$])\$([^\n$]+?)\$(?!\$)/g, function (_m, pre, body) {
+          return pre + '$' + esc(body) + '$';
+        });
+        return src;
+      }
+
+      var slideshow;
+      fetch('world_models.md')
+        .then(function (r) { return r.text(); })
+        .then(function (src) {
+          slideshow = remark.create({
+            source: protectMath(src),
+            navigation: { scroll: true, touch: false, click: false }
+          });
+          slideshow.on('afterShowSlide', typesetVisibleSlide);
+          if (window.MathJax && MathJax.typesetPromise) typesetVisibleSlide();
+        });
 
       // Click any slide image to toggle a full-window zoom.
       // Click the zoomed image (or its backdrop, or press Escape) to shrink it back.
@@ -92,5 +112,35 @@
         if (e.key === 'Escape') unzoomAllImages();
       });
     </script>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          processEscapes: true
+        },
+        options: {
+          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+        },
+        startup: {
+          typeset: false,
+          ready: function () {
+            MathJax.startup.defaultReady();
+            MathJax.startup.promise.then(typesetVisibleSlide);
+          }
+        }
+      };
+
+      function typesetVisibleSlide() {
+        if (!window.MathJax || !MathJax.typesetPromise) return;
+        var el = document.querySelector('.remark-visible') || document.body;
+        MathJax.typesetClear && MathJax.typesetClear([el]);
+        return MathJax.typesetPromise([el]).catch(function (err) {
+          console.error('MathJax typeset error:', err);
+        });
+      }
+    </script>
+    <script id="MathJax-script" async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
   </body>
 </html>
