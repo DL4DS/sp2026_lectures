@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Title</title>
+    <meta charset="utf-8">
+    <style>
+      @import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+      @import url(https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic);
+      @import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
+
+      body { font-family: 'Droid Serif'; }
+      h1, h2, h3 {
+        font-family: 'Yanone Kaffeesatz';
+        font-weight: normal;
+      }
+      .remark-code, .remark-inline-code { font-family: 'Ubuntu Mono'; }
+      .remark-slide-content img {
+        max-width: 70%;
+        max-height: 380px;
+        display: block;
+        margin: 0.4em auto;
+        object-fit: contain;
+        cursor: zoom-in;
+        transition: transform 0.15s ease;
+      }
+      .remark-slide-content img.zoomed {
+        position: fixed !important;
+        top: 50% !important;
+        left: 50% !important;
+        transform: translate(-50%, -50%) !important;
+        width: 85vw !important;
+        height: 85vh !important;
+        max-width: none !important;
+        max-height: none !important;
+        object-fit: contain !important;
+        margin: 0 !important;
+        z-index: 10000;
+        cursor: zoom-out;
+        background: white;
+        box-shadow: 0 0 0 100vmax rgba(0, 0, 0, 0.88);
+      }
+      .remark-slide-content { padding: 1em 4em 4em 4em; }  /* leave room at bottom */
+      .footnote {
+        position: absolute;
+        bottom: 3em;
+        font-size: 0.8em;
+      }
+      .red  { color: #d7263d; }
+      .bold { font-weight: bold; }
+    </style>
+  </head>
+  <body>
+    <textarea id="source">
+    </textarea>
+    <script src="https://remarkjs.com/downloads/remark-latest.min.js">
+    </script>
+    <script>
+      var slideshow = remark.create({
+        sourceUrl: 'world_models.md',
+        navigation: {
+          // Enable or disable navigating using scroll
+          scroll: true,
+
+          // Enable or disable navigation using touch
+          touch: false,
+
+          // Enable or disable navigation using click
+          click: false
+        }
+      });
+
+      // Click any slide image to toggle a full-window zoom.
+      // Click the zoomed image (or its backdrop, or press Escape) to shrink it back.
+      function unzoomAllImages() {
+        document.querySelectorAll('.remark-slide-content img.zoomed')
+          .forEach(function (img) { img.classList.remove('zoomed'); });
+      }
+
+      document.addEventListener('click', function (e) {
+        var target = e.target;
+        if (target && target.tagName === 'IMG' &&
+            target.closest && target.closest('.remark-slide-content')) {
+          e.stopPropagation();
+          target.classList.toggle('zoomed');
+          return;
+        }
+        // Click anywhere else: dismiss any currently-zoomed image.
+        unzoomAllImages();
+      }, true);
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') unzoomAllImages();
+      });
+    </script>
+  </body>
+</html>
