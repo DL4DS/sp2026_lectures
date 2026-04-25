@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>DS 542 / DL4DS — Spring 2026 Lectures</title>
+    <style>
+      @import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz:400,700);
+      @import url(https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic);
+      @import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700);
+
+      :root {
+        --accent: #cc0000;          /* BU scarlet */
+        --ink:    #1a1a1a;
+        --muted:  #555;
+        --line:   #e5e5e5;
+        --bg:     #fafafa;
+        --card:   #ffffff;
+      }
+
+      * { box-sizing: border-box; }
+
+      html, body {
+        margin: 0;
+        padding: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: 'Droid Serif', Georgia, serif;
+        line-height: 1.55;
+      }
+
+      .wrap {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 3rem 1.5rem 4rem;
+      }
+
+      header {
+        border-bottom: 1px solid var(--line);
+        padding-bottom: 1.5rem;
+        margin-bottom: 2.5rem;
+      }
+
+      h1, h2, h3 {
+        font-family: 'Yanone Kaffeesatz', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        font-weight: 400;
+        letter-spacing: 0.01em;
+        margin: 0;
+      }
+
+      h1 {
+        font-size: 3rem;
+        line-height: 1.05;
+        margin-bottom: 0.25rem;
+      }
+
+      .course {
+        font-family: 'Yanone Kaffeesatz', sans-serif;
+        font-size: 1.4rem;
+        color: var(--accent);
+        letter-spacing: 0.03em;
+      }
+
+      .tagline {
+        color: var(--muted);
+        margin: 0.75rem 0 0;
+        font-size: 1.05rem;
+      }
+
+      section.lectures h2 {
+        font-size: 1.6rem;
+        margin-bottom: 1rem;
+        color: var(--muted);
+      }
+
+      .cards {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+
+      @media (min-width: 720px) {
+        .cards { grid-template-columns: 1fr 1fr; }
+      }
+
+      a.card {
+        display: block;
+        background: var(--card);
+        color: var(--ink);
+        text-decoration: none;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 1.5rem 1.5rem 1.25rem;
+        transition: transform 0.12s ease,
+                    box-shadow 0.12s ease,
+                    border-color 0.12s ease;
+      }
+
+      a.card:hover,
+      a.card:focus {
+        transform: translateY(-2px);
+        border-color: var(--accent);
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.07);
+        outline: none;
+      }
+
+      a.card .num {
+        display: inline-block;
+        font-family: 'Ubuntu Mono', monospace;
+        font-size: 0.8rem;
+        color: var(--accent);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        margin-bottom: 0.5rem;
+      }
+
+      a.card h3 {
+        font-size: 2rem;
+        line-height: 1.1;
+        margin-bottom: 0.5rem;
+      }
+
+      a.card p {
+        color: var(--muted);
+        margin: 0 0 0.75rem;
+        font-size: 0.98rem;
+      }
+
+      a.card .cta {
+        font-family: 'Yanone Kaffeesatz', sans-serif;
+        font-size: 1.15rem;
+        color: var(--accent);
+      }
+
+      a.card .cta::after {
+        content: " \203A";   /* › */
+        transition: margin-left 0.12s ease;
+        display: inline-block;
+      }
+
+      a.card:hover .cta::after { margin-left: 0.25rem; }
+
+      footer {
+        margin-top: 3rem;
+        padding-top: 1.25rem;
+        border-top: 1px solid var(--line);
+        font-size: 0.9rem;
+        color: var(--muted);
+      }
+
+      footer h4 {
+        font-family: 'Yanone Kaffeesatz', sans-serif;
+        font-size: 1.2rem;
+        font-weight: 400;
+        color: var(--ink);
+        margin: 0 0 0.5rem;
+      }
+
+      footer kbd {
+        font-family: 'Ubuntu Mono', monospace;
+        font-size: 0.85em;
+        background: #eee;
+        border: 1px solid #ccc;
+        border-bottom-width: 2px;
+        border-radius: 3px;
+        padding: 0.05em 0.4em;
+        color: var(--ink);
+      }
+
+      footer ul { padding-left: 1.25rem; margin: 0.5rem 0 0; }
+      footer li { margin-bottom: 0.3rem; }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <div class="course">DS 542 / DL4DS &middot; Spring 2026</div>
+        <h1>Deep Learning for Data Science</h1>
+        <p class="tagline">Selected lecture slide decks. Built with
+          <a href="https://github.com/gnab/remark">remark.js</a>.</p>
+          <p class="tagline"> <a href="https://dl4ds.github.io/sp2026"> Course website</a></p>
+      </header>
+
+      <section class="lectures">
+        <h2>Lectures</h2>
+        <div class="cards">
+
+          <a class="card" href="reasoning_and_coding_llms.html">
+            <span class="num">Lecture 24</span>
+            <h3>Reasoning LLMs &amp; Coding Agents</h3>
+            <p>DeepSeek-R1 as a case study, the four ways to build a
+               reasoning model, and the anatomy of a modern coding agent's harness.</p>
+            <span class="cta">Open slides</span>
+          </a>
+
+
+          <a class="card" href="world_models.html">
+            <span class="num">Lecture 25</span>
+            <h3>World Models</h3>
+            <p>The historical arc from Ha &amp; Schmidhuber (2018) to
+               DeepMind's Genie 3 and the JEPA frontier (2025&ndash;2026).</p>
+            <span class="cta">Open slides</span>
+          </a>
+
+
+        </div>
+      </section>
+
+      <footer>
+        <h4>Navigation tips</h4>
+        <ul>
+          <li>Arrow keys or <kbd>Space</kbd> / <kbd>Shift</kbd>+<kbd>Space</kbd> to move between slides.</li>
+          <li><kbd>P</kbd> toggles presenter mode; <kbd>C</kbd> clones the deck into a second window (dual-monitor).</li>
+          <li><kbd>F</kbd> for fullscreen; <kbd>?</kbd> shows the full keybinding list.</li>
+          <li>Click any image in a slide to expand it to the full window; click again or press <kbd>Esc</kbd> to shrink it.</li>
+        </ul>
+      </footer>
+    </div>
+  </body>
+</html>
