@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>World Models (Survey-Structured)</title>
+    <meta charset="utf-8">
+    <style>
+      @import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+      @import url(https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic);
+      @import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
+
+      body { font-family: 'Droid Serif'; }
+      h1, h2, h3 {
+        font-family: 'Yanone Kaffeesatz';
+        font-weight: normal;
+      }
+      .remark-code, .remark-inline-code { font-family: 'Ubuntu Mono'; }
+      .remark-slide-content img {
+        max-width: 70%;
+        max-height: 380px;
+        display: block;
+        margin: 0.4em auto;
+        object-fit: contain;
+        cursor: zoom-in;
+        transition: transform 0.15s ease;
+      }
+      /* Full-window zoom overlay (attached to <body>, so it escapes
+         remark's per-slide CSS transform and 80vw/80vh are relative
+         to the actual browser window). */
+      #img-zoom-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.88);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+        cursor: zoom-out;
+        animation: zoom-fade-in 0.15s ease;
+      }
+      #img-zoom-overlay img {
+        width: auto;
+        height: auto;
+        max-width: 80vw;
+        max-height: 80vh;
+        object-fit: contain;
+        background: white;
+        box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
+        animation: zoom-pop-in 0.15s ease;
+      }
+      @keyframes zoom-fade-in {
+        from { opacity: 0; }
+        to   { opacity: 1; }
+      }
+      @keyframes zoom-pop-in {
+        from { transform: scale(0.85); }
+        to   { transform: scale(1); }
+      }
+      .remark-slide-content { padding: 1em 4em 4em 4em; }  /* leave room at bottom */
+      .footnote {
+        position: absolute;
+        bottom: 3em;
+        font-size: 0.8em;
+      }
+      .red  { color: #d7263d; }
+      .bold { font-weight: bold; }
+      table {
+        border-collapse: collapse;
+        margin: 0 auto; /* Centers the table */
+      }
+      th, td {
+        border: 1px solid #ccc;
+        padding: 10px;
+      }
+    </style>
+  </head>
+  <body>
+
+    <!--
+    <textarea id="source">
+    </textarea>
+  -->
+    <script src="https://remarkjs.com/downloads/remark-latest.min.js">
+    </script>
+    <script>
+      // Hide markdown's special characters inside math regions so remark's
+      // markdown parser doesn't turn `s_t` into `s<em>t</em>` etc.
+      // The browser decodes the entities back to plain text in the DOM,
+      // so MathJax still sees correct LaTeX.
+      function protectMath(src) {
+        function esc(m) {
+          return m
+            .replace(/_/g, '&#95;')
+            .replace(/\*/g, '&#42;')
+            .replace(/\\/g, '&#92;');
+        }
+        // Display math: $$ ... $$  (multi-line allowed)
+        src = src.replace(/\$\$([\s\S]+?)\$\$/g, function (_m, body) {
+          return '$$' + esc(body) + '$$';
+        });
+        // Inline math: $ ... $  (single line, not $$)
+        src = src.replace(/(^|[^$])\$([^\n$]+?)\$(?!\$)/g, function (_m, pre, body) {
+          return pre + '$' + esc(body) + '$';
+        });
+        return src;
+      }
+
+      var slideshow;
+      fetch('world_models_ver2.md')
+        .then(function (r) { return r.text(); })
+        .then(function (src) {
+          slideshow = remark.create({
+            source: protectMath(src),
+            navigation: {
+              scroll: true,
+              touch: true,
+              click: false }
+          });
+          slideshow.on('afterShowSlide', typesetVisibleSlide);
+          if (window.MathJax && MathJax.typesetPromise) typesetVisibleSlide();
+        });
+
+      // Click any slide image to open it in a full-window overlay.
+      // Click the overlay (or press Escape) to dismiss.
+      // The overlay is appended to <body> so it escapes remark's
+      // per-slide CSS transform; otherwise vw/vh sizes inherit the
+      // slide's scale factor and the image renders too large.
+      function closeZoomOverlay() {
+        var ov = document.getElementById('img-zoom-overlay');
+        if (ov) ov.remove();
+      }
+
+      function openZoomOverlay(srcImg) {
+        closeZoomOverlay();
+        var ov = document.createElement('div');
+        ov.id = 'img-zoom-overlay';
+        var big = document.createElement('img');
+        big.src = srcImg.currentSrc || srcImg.src;
+        big.alt = srcImg.alt || '';
+        ov.appendChild(big);
+        ov.addEventListener('click', closeZoomOverlay);
+        document.body.appendChild(ov);
+      }
+
+      document.addEventListener('click', function (e) {
+        var target = e.target;
+        if (target && target.tagName === 'IMG' &&
+            target.closest && target.closest('.remark-slide-content')) {
+          e.stopPropagation();
+          e.preventDefault();
+          openZoomOverlay(target);
+        }
+      }, true);
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') closeZoomOverlay();
+      });
+    </script>
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          processEscapes: true
+        },
+        options: {
+          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+        },
+        startup: {
+          typeset: false,
+          ready: function () {
+            MathJax.startup.defaultReady();
+            MathJax.startup.promise.then(typesetVisibleSlide);
+          }
+        }
+      };
+
+      function typesetVisibleSlide() {
+        if (!window.MathJax || !MathJax.typesetPromise) return;
+        var el = document.querySelector('.remark-visible') || document.body;
+        MathJax.typesetClear && MathJax.typesetClear([el]);
+        return MathJax.typesetPromise([el]).catch(function (err) {
+          console.error('MathJax typeset error:', err);
+        });
+      }
+    </script>
+    <script id="MathJax-script" async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+  </body>
+</html>
