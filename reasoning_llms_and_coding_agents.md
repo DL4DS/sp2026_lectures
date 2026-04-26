@@ -831,16 +831,37 @@ The state of the art in 2026: **strong reasoning model** × **strong coding harn
 ## Further Reading
 
 **Reasoning models**
-- DeepSeek-R1 technical report — *arxiv.org/abs/2501.12948*
-- Snell et al., *Scaling LLM Test-Time Compute Optimally* — *arxiv.org/abs/2408.03314*
-- *O1 Replication Journey — Part 1* — *arxiv.org/abs/2410.18982*
-- Sky-T1 blog — *novasky-ai.github.io/posts/sky-t1/*
-- TinyZero repo — *github.com/Jiayi-Pan/TinyZero*
+- [Understanding Reasoning LLMs](https://magazine.sebastianraschka.com/p/understanding-reasoning-llms)
+- DeepSeek-R1 technical report — [arXiv:2501.12948](https://arxiv.org/abs/2501.12948)
+- Snell et al., *Scaling LLM Test-Time Compute Optimally* — [arXiv:2408.03314](https://arxiv.org/abs/2408.03314)
+- *O1 Replication Journey — Part 1* — [arXiv:2410.18982](https://arxiv.org/abs/2410.18982)
+- Sky-T1 blog — [novasky-ai.github.io/posts/sky-t1/](https://novasky-ai.github.io/posts/sky-t1/)
+- TinyZero repo — [github.com/Jiayi-Pan/TinyZero](https://github.com/Jiayi-Pan/TinyZero)
 
 **Coding agents**
-- Raschka's *Mini Coding Agent* — *github.com/rasbt/mini-coding-agent*
-- Raschka, *Components of a Coding Agent* (Apr 2026)
-- Raschka, *Build a Reasoning Model (From Scratch)* — Manning, 2026
+- Raschka, *[Components of a Coding Agent](https://magazine.sebastianraschka.com/p/components-of-a-coding-agent)* (Apr 2026)
+- Raschka's *Mini Coding Agent* — [github.com/rasbt/mini-coding-agent](https://github.com/rasbt/mini-coding-agent)
+
+<!--
+**Readings:**
+- [Chain-of-Thought Prompting Elicits Reasoning in Large Language Models](https://arxiv.org/pdf/2201.11903)
+- [Large Language Models are Zero-Shot Reasoners](https://proceedings.neurips.cc/paper_files/paper/2022/file/8bb0d291acd4acf06ef112099c16f326-Paper-Conference.pdf)
+- [Learning to Reason with LLMs](https://openai.com/index/learning-to-reason-with-llms/)
+- [OpenAI Harmony Response Format](https://cookbook.openai.com/articles/openai-harmony)
+- [DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning](https://arxiv.org/abs/2501.12948)
+- [The Illusion of Thinking: Understanding the Strengths and Limitations of Reasoning Models via the Lens of Problem Complexity](https://machinelearning.apple.com/research/illusion-of-thinking)
+- [DeepSeekMath-V2: Towards Self-Verifiable Mathematical Reasoning](https://github.com/deepseek-ai/DeepSeek-Math-V2/blob/main/DeepSeekMath_V2.pdf)
+- [AlphaGeometry: An Olympiad-level AI system for geometry](https://deepmind.google/blog/alphageometry-an-olympiad-level-ai-system-for-geometry/)
+- [How Does A Blind Model See The Earth?](https://outsidetext.substack.com/p/how-does-a-blind-model-see-the-earth)
+- [Self-Supervised Learning from Images with a Joint-Embedding Predictive Architecture](https://openaccess.thecvf.com/content/CVPR2023/papers/Assran_Self-Supervised_Learning_From_Images_With_a_Joint-Embedding_Predictive_Architecture_CVPR_2023_paper.pdf)
+- [V-JEPA 2: Self-Supervised Video Models Enable Understanding, Prediction and Planning](https://arxiv.org/abs/2506.09985)
+
+**Extra Readings:**
+- [s1: Simple test-time scaling](https://arxiv.org/abs/2501.19393)
+- [Large Language Monkeys: Scaling Inference Compute with Repeated Sampling](https://arxiv.org/abs/2407.21787)
+- [Language Models, World Models, and Human Model-Building](https://lingo.csail.mit.edu/blog/world_models/)
+- [LLMs and World Models](https://aiguide.substack.com/p/llms-and-world-models-part-1)
+-->
 
 ---
 
