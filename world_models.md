@@ -41,16 +41,22 @@ The choice of *what counts as $s$*, *what counts as $a$*, and *what we use the p
 ## Why learn a world model?
 
 - **Sample efficiency** — train policies in imagination, not in the real world
+--
+
 - **Planning** — roll out counterfactual futures before acting
+--
+
 - **Self-supervised representation learning** — prediction as the pretraining objective
+--
+
 - **Simulation** — synthetic data, games, robotics, autonomous driving
 
 ---
 
-## A unifying lecture: callbacks to everything we've covered
+## Callbacks to other things we've covered
 
 | Component | Lectures it draws on |
-|---|---|
+|:---|:---|
 | Encoder of observations | VAE, ViT, CNN |
 | Sequence dynamics | RNN, Transformer |
 | High-fidelity decoding | Diffusion, GAN |
@@ -67,7 +73,7 @@ World models are a *recombination* of techniques you already know.
 
 ## The agent–environment loop
 
-![RL agent-environment loop](https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Reinforcement_learning_diagram.svg/1280px-Reinforcement_learning_diagram.svg.png)
+<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Reinforcement_learning_diagram.svg/1280px-Reinforcement_learning_diagram.svg.png" alt="RL agent-environment loop" style="max-width: 50%; height: auto;">
 
 At each step $t$: agent observes $s_t$, takes action $a_t$, receives reward $r_{t+1}$, and lands in $s_{t+1}$.
 
@@ -139,7 +145,7 @@ Demos: **CarRacing-v0** and **ViZDoom: Take Cover**.
 
 A **convolutional VAE** compresses each $64 \times 64 \times 3$ frame into a 32-dimensional latent $z_t$.
 
-*Callback to your VAE lecture* — same architecture, same ELBO loss:
+*Callback to VAE lecture* — same architecture, same ELBO loss:
 
 $$\mathcal{L}_{\text{VAE}} = \mathbb{E}_{q(z|x)}[\log p(x|z)] - D_{\text{KL}}(q(z|x) \| p(z))$$
 
@@ -250,12 +256,12 @@ The prior $p_\phi$ is trained to match the posterior $q_\phi$ (KL term) — so w
 
 ## DreamerV1/V2 — actor–critic in imagined latent space
 
-![DreamerV3 world model and behavior loops](https://danijar.com/asset/dreamerv3/header.png)
+![DreamerV3 world model and behavior loops](https://danijar.com/asset/dreamerv3/header.gif)
 
-(a) Train the world model from real experience.
+(a) Train the world model from real experience.<br>
 (b) Imagine latent rollouts; train **actor** and **critic** entirely inside these imagined trajectories.
 
-*Source: Hafner et al., DreamerV3 / Nature 2025.*
+*Source: Hafner et al., DreamerV3 / Nature 2025 [arXiv](https://arxiv.org/abs/2301.04104).*
 
 ---
 
@@ -319,12 +325,13 @@ A new question emerges: *if you train a generative video model at sufficient sca
 
 OpenAI, Feb 2024. Architecture: a **diffusion transformer** operating on **spacetime patches** of video latents.
 
-![Sora spacetime patches](https://images.ctfassets.net/kftzwdyauwt9/5DmHyHMBSjnUWQYLnF6x9X/3a193e0e90be8f1ca2c1ad0f37bce478/figure-patches.png)
+![Sora spacetime patches](https://images.ctfassets.net/kftzwdyauwt9/1d2955dd-9d05-4f33-13073dc9301d/8dc0bae8cb98054d083ab3cc3ade6859/figure-patches.png?w=3840&q=90&fm=webp)
 
 A pretrained video VAE compresses each clip; the result is cut into *spacetime patches*; a DiT denoises them.
 
 *Callback to ViT (patches) and diffusion (denoising) lectures.*
-*Source: OpenAI Sora technical report.*
+
+*Source: [OpenAI Sora technical report](https://openai.com/index/video-generation-models-as-world-simulators/).*
 
 ---
 
@@ -347,7 +354,7 @@ A pretrained video VAE compresses each clip; the result is cut into *spacetime p
 
 ## Genie — the *interactive* turn
 
-Bruce et al., DeepMind, Feb 2024 (arXiv:2402.15391). **11B parameters**, trained on **200,000 hours** of unlabeled internet gameplay video.
+Bruce et al., DeepMind, Feb 2024 ([arXiv:2402.15391](https://arxiv.org/abs/2402.15391)). **11B parameters**, trained on **200,000 hours** of unlabeled internet gameplay video.
 
 Three components:
 
@@ -355,25 +362,25 @@ Three components:
 - **Latent action model** — infers a *learned* discrete action vocabulary (8 actions, embedding size 32) from observed transitions, **with no action labels**
 - **Dynamics model** — autoregressive ST-Transformer with MaskGIT, predicts next frame token given past tokens + latent action
 
-**Subtlety** (Bandaru, 2025): the latent actions are *not interpretable* — "action 1" might mean diagonal-up, not "jump." So is Genie a true *world model* or just a *controllable video generator*? Debated.
+**Subtlety** ([Bandaru, 2025](https://rohitbandaru.github.io/blog/World-Models/)): the latent actions are *not interpretable* — "action 1" might mean diagonal-up, not "jump." So is Genie a true *world model* or just a *controllable video generator*? Debated.
 
 ---
 
 ## Genie 3 — real-time playable worlds
 
-![Genie 3 navigable scene](https://lh3.googleusercontent.com/AzbDMz8tYFS9bGTskUNncxX2DNX9Im2BGOIFrvMPKgaSNZl_QwCfnHTLAsTPLCvmHkBn94kdU1lCLSe2bByp0YcSMJZ3ZGqRwbUg=w1072-rw)
+![Genie 3 navigable scene](https://lh3.googleusercontent.com/BirHhzrtzHQtXvNG0dXcj9QFA7vGUNWQYbeQiMiY7RL8a7-xGrLDGybf9YZZ1nML7lRVZh4KYARz0PFO8xBAfe7FAatH6xVlRnakHtnESHlpzEBTEA=w2880-h1620-n-nu-rw-lo)
 
 DeepMind, Aug 2025. **24 fps, 720p, several minutes** of consistent dynamics from a text prompt. No hard-coded physics.
 
 Key new mechanism: **promptable world events** — mid-session text commands ("start a thunderstorm") modify the running simulation.
 
-*Source: DeepMind Genie 3 blog.*
+*Source: [DeepMind Genie 3 blog](https://deepmind.google/blog/genie-3-a-new-frontier-for-world-models/).*
 
 ---
 
 ## Cosmos — physical AI foundation model
 
-NVIDIA, Jan 2025 (arXiv:2501.03575). Explicitly a **"World Foundation Model"** for physical AI.
+NVIDIA, Jan 2025 ([arXiv:2501.03575](https://arxiv.org/abs/2501.03575)). Explicitly a **"World Foundation Model"** for physical AI.
 
 - Trained on **20M hours of real-world video** (vs. Genie's gameplay)
 - Both **diffusion** and **autoregressive** variants
@@ -415,7 +422,7 @@ This sets up Part 6.
 
 ---
 
-## LeCun's critique (2022 AMI position paper)
+## LeCun's critique ([2022 AMI position paper](https://openreview.net/forum?id=BZ5a1r-kVsf))
 
 > *Generative pixel-prediction is fundamentally wasteful.*
 
@@ -429,14 +436,14 @@ This becomes the **Joint-Embedding Predictive Architecture (JEPA)**.
 
 ## JEPA architecture
 
-![JEPA vs generative architectures](https://scontent.fbom19-1.fna.fbcdn.net/v/t39.2365-6/348828301_1408304523316801_3022577905238167259_n.png)
+![JEPA vs generative architectures](https://scontent-lga3-3.xx.fbcdn.net/v/t39.2365-6/347632356_201757625702076_1813962196800732436_n.png?_nc_cat=102&ccb=1-7&_nc_sid=e280be&_nc_ohc=_uLGhys0OkwQ7kNvwFGAGyJ&_nc_oc=AdpurO8E2VRqlIMy27p1Slx1qxUuzNfjJ7qWG5XGenndwS-z7OzAhawxYfgZ6KUEb3w&_nc_zt=14&_nc_ht=scontent-lga3-3.xx&_nc_gid=ld4pnAXoy4I7zYthbFs1Hw&_nc_ss=7b289&oh=00_Af1_C0lJATWz_WMlQOw61OJmyU8nbOx5Mm31aymruIRw2Q&oe=6A079DA0)
 
-- **Generative** (left, MAE): decode pixel $y$ from $x$
+- **Generative** (left, Masked AE): decode pixel $y$ from $x$
 - **JEPA** (right): predict the *embedding* $s_y$ from $s_x$, conditioned on action / latent $z$
 
 Loss is computed in **representation space**, not pixel space.
 
-*Source: Assran et al., I-JEPA (CVPR 2023).*
+*Source: [Assran et al., I-JEPA (CVPR 2023)](https://arxiv.org/abs/2301.08243).*
 
 ---
 
@@ -553,16 +560,16 @@ Every prior lecture in the course (FCN, CNN, VAE, GAN, transformer, ViT, diffusi
 **Tutorials & overviews**:
 - Ha & Schmidhuber, *World Models* — interactive paper at [worldmodels.github.io](https://worldmodels.github.io)
 - Rohit Bandaru, "World Models" (2025) — [rohitbandaru.github.io/blog/World-Models](https://rohitbandaru.github.io/blog/World-Models/)
-- Survey: arXiv:2411.14499 (ACM CSUR 2025)
+- Survey: [arXiv:2411.14499](https://arxiv.org/abs/2411.14499) (ACM CSUR 2025)
 
 **Primary sources**:
-- DreamerV3 — Hafner et al., *Nature* 2025; arXiv:2301.04104
-- Dreamer 4 — arXiv:2509.24527
+- DreamerV3 — Hafner et al., *Nature* 2025; [arXiv:2301.04104](https://arxiv.org/abs/2301.04104)
+- Dreamer 4 — Hafner et al., [arXiv:2509.24527](https://arxiv.org/abs/2509.24527)
 - Sora — OpenAI technical report (Feb 2024)
-- Genie — Bruce et al., arXiv:2402.15391; DeepMind blogs for Genie 2 / 3
-- Cosmos — NVIDIA, arXiv:2501.03575
-- V-JEPA 2 — Assran et al., arXiv:2506.09985
-- LeCun, "A Path Towards Autonomous Machine Intelligence" (2022)
+- Genie — Bruce et al., [arXiv:2402.15391](https://arxiv.org/abs/2402.15391); DeepMind blogs for Genie 2 / 3
+- Cosmos — NVIDIA, [arXiv:2501.03575](https://arxiv.org/abs/2501.03575)
+- V-JEPA 2 — Assran et al., [arXiv:2506.09985](https://arxiv.org/abs/2506.09985)
+- LeCun, "A Path Towards Autonomous Machine Intelligence" (2022) [OpenReview](https://openreview.net/pdf?id=BZ5a1r-kVsf)
 
 *Questions?*
 

@@ -23,21 +23,37 @@
         cursor: zoom-in;
         transition: transform 0.15s ease;
       }
-      .remark-slide-content img.zoomed {
-        position: fixed !important;
-        top: 50% !important;
-        left: 50% !important;
-        transform: translate(-50%, -50%) !important;
-        width: 85vw !important;
-        height: 85vh !important;
-        max-width: none !important;
-        max-height: none !important;
-        object-fit: contain !important;
-        margin: 0 !important;
+      /* Full-window zoom overlay (attached to <body>, so it escapes
+         remark's per-slide CSS transform and 80vw/80vh are relative
+         to the actual browser window). */
+      #img-zoom-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.88);
+        display: flex;
+        align-items: center;
+        justify-content: center;
         z-index: 10000;
         cursor: zoom-out;
+        animation: zoom-fade-in 0.15s ease;
+      }
+      #img-zoom-overlay img {
+        width: auto;
+        height: auto;
+        max-width: 80vw;
+        max-height: 80vh;
+        object-fit: contain;
         background: white;
-        box-shadow: 0 0 0 100vmax rgba(0, 0, 0, 0.88);
+        box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
+        animation: zoom-pop-in 0.15s ease;
+      }
+      @keyframes zoom-fade-in {
+        from { opacity: 0; }
+        to   { opacity: 1; }
+      }
+      @keyframes zoom-pop-in {
+        from { transform: scale(0.85); }
+        to   { transform: scale(1); }
       }
       .remark-slide-content { padding: 1em 4em 4em 4em; }  /* leave room at bottom */
       .footnote {
@@ -71,11 +87,26 @@
         }
       });
 
-      // Click any slide image to toggle a full-window zoom.
-      // Click the zoomed image (or its backdrop, or press Escape) to shrink it back.
-      function unzoomAllImages() {
-        document.querySelectorAll('.remark-slide-content img.zoomed')
-          .forEach(function (img) { img.classList.remove('zoomed'); });
+      // Click any slide image to open it in a full-window overlay.
+      // Click the overlay (or press Escape) to dismiss.
+      // The overlay is appended to <body> so it escapes remark's
+      // per-slide CSS transform; otherwise vw/vh sizes inherit the
+      // slide's scale factor and the image renders too large.
+      function closeZoomOverlay() {
+        var ov = document.getElementById('img-zoom-overlay');
+        if (ov) ov.remove();
+      }
+
+      function openZoomOverlay(srcImg) {
+        closeZoomOverlay();
+        var ov = document.createElement('div');
+        ov.id = 'img-zoom-overlay';
+        var big = document.createElement('img');
+        big.src = srcImg.currentSrc || srcImg.src;
+        big.alt = srcImg.alt || '';
+        ov.appendChild(big);
+        ov.addEventListener('click', closeZoomOverlay);
+        document.body.appendChild(ov);
       }
 
       document.addEventListener('click', function (e) {
@@ -83,15 +114,13 @@
         if (target && target.tagName === 'IMG' &&
             target.closest && target.closest('.remark-slide-content')) {
           e.stopPropagation();
-          target.classList.toggle('zoomed');
-          return;
+          e.preventDefault();
+          openZoomOverlay(target);
         }
-        // Click anywhere else: dismiss any currently-zoomed image.
-        unzoomAllImages();
       }, true);
 
       document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape') unzoomAllImages();
+        if (e.key === 'Escape') closeZoomOverlay();
       });
     </script>
   </body>
