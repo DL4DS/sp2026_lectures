@@ -3,6 +3,8 @@
 ## DS 542 / DL4DS — Spring 2026
 *Boston University*
 
+> Under construction
+
 A lecture tracing the full historical arc — from Ha & Schmidhuber (2018) to the JEPA frontier (2025–2026).
 
 .footnote[.red.bold[*] Created with Claude]
