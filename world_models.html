@@ -107,7 +107,10 @@
         .then(function (src) {
           slideshow = remark.create({
             source: protectMath(src),
-            navigation: { scroll: true, touch: false, click: false }
+            navigation: {
+              scroll: true,
+              touch: true,
+              click: false }
           });
           slideshow.on('afterShowSlide', typesetVisibleSlide);
           if (window.MathJax && MathJax.typesetPromise) typesetVisibleSlide();
