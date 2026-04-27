@@ -17,13 +17,14 @@ DeepMind's **Genie 3** generates interactive, navigable 3D environments at 24 fr
 
 ![Genie 3 demo still](https://lh3.googleusercontent.com/BirHhzrtzHQtXvNG0dXcj9QFA7vGUNWQYbeQiMiY7RL8a7-xGrLDGybf9YZZ1nML7lRVZh4KYARz0PFO8xBAfe7FAatH6xVlRnakHtnESHlpzEBTEA=w2880-h1620-n-nu-rw-lo)
 
-Does the network *understand* how the world works, or merely *predict* what its next frame should look like? The survey we'll follow argues these are two different research programs.
+* Does the network *understand* how the world works, or merely *predict* what its next frame should look like?
+* The survey we'll follow argues these are two different research programs.
 
 ---
 
 ## Lecture roadmap
 
-![Survey outline](https://raw.githubusercontent.com/tsinghua-fib-lab/World-Model/main/asset/outline.png)
+<img src="https://raw.githubusercontent.com/tsinghua-fib-lab/World-Model/main/asset/outline.png" alt="Survey outline" style="max-width: 410px; display: block; margin: 0.4em auto;" />
 
 1. **Background & the dual taxonomy** — what is a world model?
 2. **Understanding the world** — internal/implicit world models
@@ -45,7 +46,7 @@ Does the network *understand* how the world works, or merely *predict* what its 
 | Joint-embedding objectives | GNN, contrastive self-supervised |
 | Action conditioning | (new today: Reinforcement Learning) |
 
-World models are a *recombination* of techniques you already know.
+World models are a *recombination* of techniques we previously covered.
 
 ---
 
@@ -59,9 +60,10 @@ A **world model** is a learned function that predicts how the world evolves:
 
 $$\hat{s}_{t+1} = f_\theta(s_t, a_t)$$
 
-Read this as: *given the current state $s_t$ and action $a_t$, predict the next state.* The network's parameters are $\theta$.
+* *given the current state $s_t$ and action $a_t$, predict the next state.*
+* The network's parameters are $\theta$.
 
-The deep disagreement in the field is about **what "state" means**:
+The disagreement in the field is about **what "state" means**:
 - raw pixels of a video frame?
 - a learned latent vector?
 - a symbolic description in language?
@@ -102,6 +104,13 @@ In **reinforcement learning**, an agent observes a state, takes an action, gets 
 | Sample cost | Millions of steps | Strong — train in imagination |
 | Risk | Stable | World-model errors compound |
 
+
+<span style="font-size: 85%; color:rgb(115, 115, 115);">
+<b>DQN (Deep Q-Network)</b> is a model-free reinforcement learning algorithm that learns to estimate the value (Q-value) of taking certain actions in specific states using a neural network, enabling agents to maximize cumulative rewards through trial and error.
+<br><br>
+<b>PPO (Proximal Policy Optimization)</b> is a model-free reinforcement learning algorithm based on policy gradients that updates the policy in a stable and efficient way by constraining each policy update to be close to the previous one, thus improving learning stability and performance.
+</span>
+
 ---
 
 ## The survey's dual taxonomy
@@ -141,7 +150,9 @@ Each will reappear later in the lecture.
 
 ## Two ways to *use* a world model
 
-> **[FIGURE PLACEHOLDER — Survey Fig. 2: Two schemes for using a world model in decision-making]**
+<img src="assets/ding-fig-3.png" alt="Two ways to use a world model" style="max-width: 630px; display: block; margin: 0.4em auto;" />
+
+> **Survey Fig. 3: Two schemes for using a world model in decision-making**
 
 Once you have a learned world model, there are two ways to use it:
 
@@ -154,7 +165,7 @@ Same world model, very different control strategies.
 
 ## Ha & Schmidhuber (2018) — the V / M / C blueprint
 
-![V, M, C architecture](https://worldmodels.github.io/assets/world_model_overview.svg)
+<img src="https://worldmodels.github.io/assets/world_model_overview.svg" alt="V, M, C architecture" style="max-width: 300px; display: block; margin: 0.4em auto;" />
 
 The paper that started the modern field. Three components:
 
@@ -170,7 +181,7 @@ The trick: train each part separately on its own objective, then deploy them as 
 
 ## The kicker: train entirely in the dream
 
-![Training inside the dream](https://worldmodels.github.io/assets/world_model_schematic.svg)
+<img src="https://worldmodels.github.io/assets/world_model_schematic.svg" alt="Training inside the dream" style="max-width: 350px; display: block; margin: 0.4em auto;" />
 
 1. Collect a few random rollouts in the real environment.
 2. Train V (the encoder) on frames; train M (the predictor) on latent sequences.
@@ -189,9 +200,19 @@ The 2018 blueprint had three weaknesses at scale:
 - Long-horizon dreams drift
 - Continuous control needs gradients, not just evolutionary search
 
+---
+
+## The Dreamer family
+
 The **Dreamer** line (Hafner et al., 2019–2025) fixes all three with a smarter latent: **part deterministic** (reliable memory) and **part stochastic** (room for uncertainty about the future). The agent then uses standard actor-critic learning entirely *inside imagined latent rollouts*.
 
+<img src="assets/Hafner24-fig-3.png" alt="Training process of Dreamer" style="max-width: 630px; display: block; margin: 0.4em auto;" />
+
+> Hafner '24 Fig. 3: Training process of Dreamer
+
+<!--
 ![DreamerV3 world model and behavior loops](https://danijar.com/asset/dreamerv3/header.gif)
+-->
 
 *Source: Hafner et al., DreamerV3 / Nature 2025 [arXiv:2301.04104](https://arxiv.org/abs/2301.04104).*
 
@@ -209,23 +230,37 @@ DreamerV3 was the **first algorithm to collect a diamond in Minecraft** — no h
 
 ## A different lineage: MuZero
 
+<img src="assets/MuZero-fig-1.png" alt="MuZero architecture" style="max-width: 530px; display: block; margin: 0.4em auto;" />
+
+> MuZero '20 Fig. 1: MuZero architecture
+
 MuZero (DeepMind 2020) is a counterpoint: it **never reconstructs pixels**. The latent is trained only to predict what planning needs — reward, value, policy.
 
 It beats AlphaZero at Go, Chess, and Shogi *without being given the rules*.
 
 > Maybe pixel reconstruction is the *wrong* objective entirely. — This idea returns at the end of the lecture as **JEPA**.
 
+???
+
+Figure 1: Planning, acting, and training with a learned model. (A) How MuZero uses its model to plan. The model consists of three connected components for representation, dynamics and prediction. Given a previous hidden state sk−1 and a candidate action ak, the dynamics function g produces an immediate reward rk and a new hidden state sk. The policy pk and value function vk are computed from the hidden state sk by a prediction function f . The initial hidden state s0 is obtained by passing the past observations (e.g. the Go board or Atari screen) into a representation function h. (B) How MuZero acts in the environment. A Monte-Carlo Tree Search is performed at each timestep t, as described in A. An action at+1 is sampled from the search policy πt, which is proportional to the visit count for each action from the root node. The environment receives the action and generates a new observation ot+1 and reward ut+1. At the end of the episode the trajectory data is stored into a replay buffer. (C) How MuZero trains its model. A trajectory is sampled from the replay buffer. For the initial step, the representation function h receives as input the past observations o1, ..., ot from the selected trajectory. The model is subsequently unrolled recurrently for K steps. At each step k, the dynamics function g receives as input the hidden state sk−1 from the previous step and the real action at+k. The parameters of the representation, dynamics and prediction functions are jointly trained, end-to-end by backpropagation-through-time, to predict three quantities: the policy pk ≈ πt+k, value function vk ≈ zt+k, and reward rt+k ≈ ut+k, where zt+k is a sample return: either the final reward (board games) or n-step return (Atari).
+
 ---
 
 ## Do LLMs already contain world models?
 
-> **[FIGURE PLACEHOLDER — Survey Fig. 3: World knowledge taxonomy in LLMs]**
+<img src="assets/ding-fig-4.png" alt="World knowledge taxonomy in LLMs" style="max-width: 330px; display: block; margin: 0.4em auto;" />
+
+> **Ding — Fig. 4: World knowledge taxonomy in LLMs**
 
 The survey asks: even *without* explicit dynamics training, do large language models internally encode world knowledge? Three categories:
 
 - **Global physical world** — geography, scale, time
 - **Local physical world** — affordances, intuitive physics
 - **Human society** — norms, theory of mind, social roles
+
+---
+
+## Do LLMs already contain world models?
 
 A canonical probe is **Othello-GPT** (Li et al. 2023): train a transformer on game-move sequences only. Researchers find an internal *board representation* — emerging without any spatial supervision.
 
@@ -328,7 +363,9 @@ But all three share the same problems:
 
 ## From video to embodied environments
 
-> **[FIGURE PLACEHOLDER — Survey Fig. 4: classification of interactive embodied environments]**
+<img src="assets/ding-fig-5.png" alt="Classification of interactive embodied environments" style="max-width: 230px; display: block; margin: 0.4em auto;" />
+
+> **Ding -- Fig. 4: classification of interactive embodied environments**
 
 The survey distinguishes video models that you *watch* from environments that you *act in*.
 
@@ -374,7 +411,9 @@ The premise: the latent need not reconstruct pixels — it only needs to *suppor
 
 ## Urban intelligence — autonomous driving
 
-> **[FIGURE PLACEHOLDER — Survey Fig. 5: autonomous-driving WM framework]**
+<img src="assets/ding-fig-6.png" alt="Autonomous-driving WM framework" style="max-width: 330px; display: block; margin: 0.4em auto;" />
+
+> **Ding -- Fig. 5: autonomous-driving WM framework**
 
 Two distinct uses of world models in autonomous driving:
 
@@ -387,7 +426,9 @@ Cosmos directly targets this market. Sim-to-real transfer remains the bottleneck
 
 ## Societal intelligence
 
-> **[FIGURE PLACEHOLDER — Survey Fig. 7: social simulacra]**
+<img src="assets/ding-fig-s2.png" alt="Social simulacra" style="max-width: 330px; display: block; margin: 0.4em auto;" />
+
+> **Din Fig. 7: social simulacra**
 
 A *world model* of a **social** environment, not a physical one.
 
