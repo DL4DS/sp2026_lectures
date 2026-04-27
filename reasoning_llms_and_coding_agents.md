@@ -61,7 +61,9 @@ No universally agreed-upon definition, but a working one:
 
 --
 
-Also called _"thinking fast"_ and _"thinking slow"_.
+Daniel Kahneman, _Thinking, Fast and Slow_.
+
+* _System 1 (fast)_ thinking and _System 2 (slow)_ thinking.
 
 ---
 
