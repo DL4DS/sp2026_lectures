@@ -174,7 +174,7 @@ MCTS: Monte Carlo Tree Search
 A **process reward model (PRM)** scores partial reasoning chains. Common variants:
 - **Best-of-N** — sample N answers, pick the highest-scored
 - **Beam search with PRM** — keep top-k partial chains at each step
-- **MCTS** — explore branching trees of reasoning
+- **MCTS** — explore branching trees of reasoning, using stats from previous simulations to balance exploration and exploitation
 
 See [Snell et al., *Scaling LLM Test-Time Compute Optimally* (2024)](https://arxiv.org/abs/2408.03314).
 
